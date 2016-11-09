@@ -11,4 +11,5 @@ setup(name = "delta_debugging",
       author_email = "github@grimm-co.com",
       url = "https://github.com/grimm-co",
       packages = ["delta_debugging"],
+      scripts = ["scripts/dd-return-code.py"]
       )
