@@ -10,10 +10,10 @@ from threading import Thread
 from time import sleep
 
 try:
-	from howcome import DD
+	from delta_debugging import DD
 except ImportError as e:
 	print("Unable to import delta debugging library.  Please ensure it is "
-		"installed.  https://www.st.cs.uni-saarland.de/askigor/downloads/")
+		"installed.  https://github.com/grimm-co/delta-debugging ")
 	from sys import exit
 	exit(-1)
 
