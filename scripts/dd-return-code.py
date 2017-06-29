@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
-from gdb import Gdb
 from logging import basicConfig, DEBUG, INFO, WARNING, debug, info, error
 from os import unlink
 from subprocess import TimeoutExpired, Popen, PIPE, STDOUT
