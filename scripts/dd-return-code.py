@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 from argparse import ArgumentParser
 from logging import basicConfig, DEBUG, INFO, WARNING, debug, info, error
-from os import unlink
+from os import close, unlink
 from subprocess import TimeoutExpired, Popen, PIPE, STDOUT
 from sys import stdin
 from tempfile import mkstemp
@@ -31,7 +31,8 @@ class MyDD(DD.DD):
         
 	def _test(self, deltas):
 		# Build input
-		input_filename = mkstemp(prefix="crash-", suffix=".ogg")[1]
+		_, input_filename = mkstemp(prefix="crash-")
+		close(_)  # We just wanted the unique filename, not an open file descriptor...
 
 		_args = [self.executable]
 		if self.target_args:
@@ -40,13 +41,12 @@ class MyDD(DD.DD):
 		with open(input_filename, "wb") as f:
 			for (index, byte) in deltas:
 				f.write(bytes([byte]))
-		p = Popen(_args, universal_newlines=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+		p = Popen(_args, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
 		if self.streaming:
 			with open(input_filename, "rb") as infile:
 				p.stdin.write(infile.read())
 			p.stdin.close()
 		p.wait()
-		p._close_fds([])
 
 		# Clean up our remporary files
 		unlink(input_filename)
@@ -74,8 +74,8 @@ if __name__ == '__main__':
 	parser.add_argument('executable', help=('The name of the executable to debug'))
 	parser.add_argument('--input-file', default=None,
 				help=('The filename of the initial (crashing) test case (Default: stdin)'))
-	parser.add_argument('--output-file', default="crash-minimal.ogg",
-				help=('The output file to create (Default: crash-minimal.ogg)'))
+	parser.add_argument('--output-file', default="crash-minimal",
+				help=('The output file to create (Default: crash-minimal)'))
 	parser.add_argument('--target-args', default="", help="The arguments to pass to the target binary (use @@ for input file)")
 	parser.add_argument('-s', action='store_true', help=('Push file through stdin to target application'))
 	parser.add_argument('-q', action='store_true', help=('Quite mode (overrides -v if both are given)'))
