@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from argparse import ArgumentParser
-from gdb import Gdb
 from logging import basicConfig, DEBUG, INFO, WARNING, debug, info, error
 from os import unlink
 from subprocess import TimeoutExpired, Popen, PIPE, STDOUT
@@ -10,16 +9,16 @@ from threading import Thread
 from time import sleep
 
 try:
-	from howcome import DD
+	from delta_debugging.DD import DD
 except ImportError as e:
 	print("Unable to import delta debugging library.  Please ensure it is "
-		"installed.  https://www.st.cs.uni-saarland.de/askigor/downloads/")
+		"installed.  https://github.com/grimm-co/delta-debugging")
 	from sys import exit
 	exit(-1)
 
-class MyDD(DD.DD):
+class MyDD(DD):
 	def __init__(self, executable, target_args, loglevel=INFO):
-		DD.DD.__init__(self)
+		DD.__init__(self)
 		self.executable = executable
 		self.target_args = target_args
 		if loglevel >= INFO:

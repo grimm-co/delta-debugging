@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
-from howcome import DD
 from socket import socket, AF_INET, SOCK_STREAM
 from subprocess import Popen, PIPE
+try:
+	from delta_debugging.DD import DD
+except ImportError as e:
+	print("Unable to import delta debugging library.  Please ensure it is "
+		"installed.  https://github.com/grimm-co/delta-debugging")
+	from sys import exit
+	exit(-1)
+
 
 HOST="192.168.192.169"
 PORT=5900
-class MyDD(DD.DD):
+class MyDD(DD):
 	def __init__(self):
-		DD.DD.__init__(self)
+		DD.__init__(self)
 		self.debug_dd = 1
         
 	def _test(self, deltas):

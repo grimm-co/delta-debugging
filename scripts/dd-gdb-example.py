@@ -4,7 +4,7 @@ from logging import basicConfig, DEBUG, INFO, debug, info, error
 from sys import stdin
 
 try:
-	from delta_debugging import DD, gdb
+	from delta_debugging import DD
 except ImportError as e:
 	print("Unable to import delta debugging library.  Please ensure it is "
 		"installed.  See https://github.com/grimm-co/delta-debugging "
