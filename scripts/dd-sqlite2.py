@@ -27,6 +27,8 @@ class MyDD(DD):
 		else:
 			self.debug_dd = 1
 			self.verbose = 1
+		# Caching results in a memory explosion for long runs
+		self.cache_outcomes = 0
         
 	def _test(self, deltas):
 		# Build input

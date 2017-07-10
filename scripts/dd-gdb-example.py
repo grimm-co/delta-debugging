@@ -4,7 +4,7 @@ from logging import basicConfig, DEBUG, INFO, debug, info, error
 from sys import stdin
 
 try:
-	from delta_debugging import DD
+	from delta_debugging.DD import DD
 except ImportError as e:
 	print("Unable to import delta debugging library.  Please ensure it is "
 		"installed.  See https://github.com/grimm-co/delta-debugging "
@@ -12,13 +12,15 @@ except ImportError as e:
 	from sys import exit
 	exit(-1)
 
-class GdbDD(DD.DD):
+class GdbDD(DD):
 	def __init__(self, executable, breakpoint, verbose=False):
-		DD.DD.__init__(self)
+		DD.__init__(self)
 		self.executable = executable
 		self.breakpoint = breakpoint
 		self.debug_dd = (0, 1)[verbose]
 		self.verbose = (0, 1)[verbose]
+		# Caching results in a memory explosion for long runs
+		self.cache_outcomes = 0
         
 	def _test(self, deltas):
 		# Build input

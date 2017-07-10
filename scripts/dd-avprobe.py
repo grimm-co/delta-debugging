@@ -9,7 +9,7 @@ from threading import Thread
 from time import sleep
 
 try:
-	from delta_debugging import DD
+	from delta_debugging.DD import DD
 	from delta_debugging.gdb import Gdb
 except ImportError as e:
 	print("Unable to import delta debugging library.  Please ensure it is "
@@ -17,9 +17,9 @@ except ImportError as e:
 	from sys import exit
 	exit(-1)
 
-class MyDD(DD.DD):
+class MyDD(DD):
 	def __init__(self, executable, target_args, loglevel=INFO):
-		DD.DD.__init__(self)
+		DD.__init__(self)
 		self.executable = executable
 		self.target_args = target_args
 		if loglevel >= INFO:
@@ -28,6 +28,8 @@ class MyDD(DD.DD):
 		else:
 			self.debug_dd = 1
 			self.verbose = 1
+		# Caching results in a memory explosion for long runs
+		self.cache_outcomes = 0
         
 	def _test(self, deltas):
 		# Build input
