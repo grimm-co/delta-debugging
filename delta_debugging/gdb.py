@@ -37,7 +37,7 @@ class Gdb(object):
 		if executable:
 			_args.append(executable)
 
-		self.p = Popen(_args, universal_newlines=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+		self.p = Popen(_args, bufsize=0, universal_newlines=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
 		if discard_output:
 			self.read_to_prompt()
 
@@ -161,6 +161,7 @@ class Gdb(object):
 				raise GdbException("get_argument only implemented for arg 0")
 		else:
 			raise GdbException("get_argument currently only implemented for AMD64")
+
 	def run(self, args=None, read_to_prompt=False):
 		"""
 		This will run the executable passed in via the constructor.
