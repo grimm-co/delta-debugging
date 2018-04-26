@@ -13,7 +13,7 @@ try:
 	from delta_debugging.gdb import Gdb
 except ImportError as e:
 	print("Unable to import delta debugging library.  Please ensure it is "
-		"installed.  https://www.st.cs.uni-saarland.de/askigor/downloads/")
+		"installed.  https://github.com/grimm-co/delta-debugging")
 	from sys import exit
 	exit(-1)
 
@@ -37,7 +37,7 @@ class GdbDD(DD):
 		"""
 		try:
 			info("Starting watchdog thread")
-			if gdb.p:  # our process is gone, horray
+			if gdb.p:  # our process is gone, hooray
 				info("Checking to see if gdb is finished")
 				gdb.p.wait(timeout=5)
 				if gdb.p and gdb.p.returncode is None:  # If gdb isn't finished by now...
@@ -55,66 +55,36 @@ class GdbDD(DD):
 				f.write(bytes([byte]))
 
 		g = Gdb(self.executable)
-		debug("Running %s" % self.executable)
 
-		# Append the stream redirection from our tempfile to the target args & run
+		# Append the input filename to the target args & run
 		args = []
 		for entry in self.target_args:
 			args.append(entry)
 		args.append(input_filename)
-		debug("target_args: %s" % args)
+		debug("Running: {} {}".format(self.executable, " ".join(args)))
 		t = Thread(target=self.wait_for_gdb, kwargs={"gdb": g})
 		t.start()  # Start waiting for gdb
-		debug("Running gdb")
 		response = g.run(args=args, read_to_prompt=True)
-		debug("Gdb exited or hit exception")
-		debug("response = %s" % response)
+		debug("gdb response = {}".format(response))
 
-		# Clean up our remporary files
+		# Clean up our temporary files
 		unlink(input_filename)
 
 		# Check for cases where we didn't crash
-		if ("exited normally" in response   # We're done
-			or "exited with code" in response):
+		if ("exited normally" in response or "exited with code" in response):
 			g.quit()
 			t.join()
 			return self.PASS
-
-		try:
-			g._determine_pc()
-			addr = g.info_registers([g.pc])[g.pc]
-			#if addr == 0:
-			#	g.quit()
-			#	return self.PASS  # We don't want the pointer to be at the NULL page
-			info("Faulted at 0x%x" % addr)
-		except ValueError as e:
-			error("Unable to determine faulting addr %s %s" % (str(e), response))
 
 		if "SIGABRT" in response:
 			g.quit()
 			t.join()
 			return self.FAIL
 
-		error("WTF just happened? %s" % response)
+		error("Unhandled exception occurred {}".format(response))
 		g.quit()
 		t.join()
 		return self.UNRESOLVED
-
-	def stringify(self, deltas):
-		data = []
-		for (index, byte) in deltas:
-			data.append(byte)
-		return "".join(data)
-
-	def target_crashed(self):
-		s = socket(AF_INET, SOCK_STREAM)
-		try:
-			s.connect((HOST, PORT))
-			s.close()
-			return False
-		except Exception as e:
-			error("%s - %s" % (type(e), str(e)))
-			return True
 
 if __name__ == '__main__':
 	parser = ArgumentParser(description=("Sample program to find the minimum input which "
@@ -137,7 +107,7 @@ if __name__ == '__main__':
 
 	basicConfig(format="[%(levelname)s] %(asctime)s - %(message)s", level=loglevel)
 	if args.input_file:
-		debug("Using input file: %s" % args.input_file)
+		debug("Using input file: {}".format(args.input_file))
 		infile = open(args.input_file, "rb")
 	else:
 		infile = stdin
