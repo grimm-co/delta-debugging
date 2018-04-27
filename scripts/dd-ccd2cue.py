@@ -88,13 +88,13 @@ class GdbDD(DD):
 		return self.UNRESOLVED
 
 if __name__ == '__main__':
-	parser = ArgumentParser(description=("Sample program to find the minimum input which "
-					"will hit the specified breakpoint.  This program "
-					"assumes that an empty input will not hit the breakpoint."))
-	parser.add_argument('executable', help=('The name of the executable to debug'))
+	parser = ArgumentParser(description=("Delta debugging test script to determine the minimum input "
+					"which will still crash ccd2cue."))
+	parser.add_argument('executable', help=('The path to ccd2cue'))
 	parser.add_argument('--input-file', default=None,
 				help=('The filename of the crashing input (Default: stdin)'))
-	parser.add_argument('--target-args', default="", help="The arguments to pass to the target binary")
+	parser.add_argument('--target-args', default="", help="The arguments to pass to the ccd2cue "
+        "(excluding the input file)")
 	parser.add_argument('-q', action='store_true', help=('Quite mode (overrides -v if both are given)'))
 	parser.add_argument('-v', action='store_true', help=('Verbose output (for debugging issues)'))
 
