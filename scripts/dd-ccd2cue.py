@@ -48,7 +48,7 @@ class GdbDD(DD):
 			pass
 
 	def _test(self, deltas):
-		# Build input
+		# Build input file
 		input_filename = mkstemp(prefix="ccd2cue-crash-", suffix=".ccd")[1]
 		with open(input_filename, "wb") as f:
 			for (index, byte) in deltas:
@@ -81,6 +81,7 @@ class GdbDD(DD):
 			t.join()
 			return self.FAIL
 
+		# Shouldn't ever happen
 		error("Unhandled exception occurred {}".format(response))
 		g.quit()
 		t.join()
