@@ -6,7 +6,6 @@ from subprocess import TimeoutExpired
 from sys import stdin
 from tempfile import mkstemp
 from threading import Thread
-from time import sleep
 
 try:
 	from delta_debugging.DD import DD
